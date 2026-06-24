@@ -1,0 +1,129 @@
+
+# LINEAR RELATIONSHIPS LEARNING GAME
+
+# Import required libraries
+import matplotlib.pyplot as plt
+import numpy as np
+from ipywidgets import interact, widgets
+from IPython.display import display, clear_output
+
+# Optional for Jupyter: %matplotlib inline
+
+# 1. Game Introduction
+print("="*40)
+print("Welcome to the Linear Relationships Learning Game!")
+print("""
+You can:
+- Investigate how slope and intercept affect linear graphs
+- Guess the equation from a line
+- Challenge yourself with random lines
+Let's get started!
+""")
+print("="*40)
+
+
+# 2. Explore Linear Equations (Interactive sliders)
+def plot_linear(slope=1, intercept=0):
+    x = np.linspace(-10, 10, 100)
+    y = slope * x + intercept
+    plt.figure(figsize=(8,4))
+    plt.plot(x, y, label=f"y = {slope}x + {intercept}", color='blue')
+    plt.scatter(0, intercept, color='red', label=f"Intercept (c = {intercept})")
+    plt.title("Explore Linear Relationships!")
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.grid(True)
+    plt.legend()
+    plt.show()
+
+print("Use the sliders below to explore different slopes and intercepts.")
+interact(plot_linear, slope=(-5, 5, 0.5), intercept=(-10, 10, 1))
+
+
+# 3. Guess the Equation Game
+def guess_the_equation():
+    # Random slope and intercept
+    slope = np.random.randint(-5,6)
+    intercept = np.random.randint(-10,11)
+    x = np.linspace(-10, 10, 100)
+    y = slope*x + intercept
+    plt.figure(figsize=(8,4))
+    plt.plot(x, y, label='Mystery Line', color='purple')
+    plt.scatter(0, intercept, color='orange', label="Intercept")
+    plt.title("Guess the Equation of the Line!")
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.grid(True)
+    plt.legend()
+    plt.show()
+    
+    # Interactive input
+    slope_guess = widgets.IntText(description="slope (m):")
+    intercept_guess = widgets.IntText(description="intercept (c):")
+    submit_button = widgets.Button(description="Submit")
+    output = widgets.Output()
+    
+    def on_submit(b):
+        clear_output(wait=True)
+        display(slope_guess, intercept_guess, submit_button, output)
+        with output:
+            if slope_guess.value == slope and intercept_guess.value == intercept:
+                print("🎉 Correct! The equation is y = {}x + {}.".format(slope, intercept))
+            else:
+                print(f"❌ Incorrect. The actual equation was y = {slope}x + {intercept}. Try again!")
+    
+    submit_button.on_click(on_submit)
+    display(slope_guess, intercept_guess, submit_button, output)
+
+print("\n--- Guess the Equation ---")
+print("A mystery line will appear. Can you guess the slope and intercept?")
+guess_the_equation()
+
+
+# 4. Intersection Challenge Game
+def intersection_challenge():
+    # Two random lines
+    slope1 = np.random.randint(-3,4)
+    intercept1 = np.random.randint(-6,7)
+    slope2 = np.random.randint(-3,4)
+    intercept2 = np.random.randint(-6,7)
+    
+    while slope1 == slope2:
+        # Avoid parallel lines
+        slope2 = np.random.randint(-3,4)
+    
+    x = np.linspace(-10,10,100)
+    y1 = slope1*x + intercept1
+    y2 = slope2*x + intercept2
+    plt.figure(figsize=(8,4))
+    plt.plot(x, y1, color='blue', label=f"Line 1: y = {slope1}x + {intercept1}")
+    plt.plot(x, y2, color='red', label=f"Line 2: y = {slope2}x + {intercept2}")
+    plt.title("Challenge: Where Do the Lines Intersect?")
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.grid(True)
+    plt.legend()
+    plt.show()
+    
+    x_int = (intercept2 - intercept1)/(slope1 - slope2)
+    y_int = slope1*x_int + intercept1
+    
+    x_guess = widgets.FloatText(description="x value:")
+    submit_button = widgets.Button(description="Submit")
+    output = widgets.Output()
+    
+    def on_submit(b):
+        clear_output(wait=True)
+        display(x_guess, submit_button, output)
+        with output:
+            if np.isclose(x_guess.value, x_int, atol=0.5):
+                print("🎉 Correct! Intersection is at x = {:.2f}, y = {:.2f}".format(x_int, y_int))
+            else:
+                print("❌ Not quite. The intersection is at x = {:.2f}, y = {:.2f}. Try again!".format(x_int, y_int))
+    
+    submit_button.on_click(on_submit)
+    display(x_guess, submit_button, output)
+    
+print("\n--- Intersection Challenge ---")
+print("Two lines are shown. Can you find the x-value where they intersect?")
+intersection_challenge()

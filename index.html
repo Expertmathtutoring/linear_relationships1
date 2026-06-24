@@ -104,7 +104,7 @@
         <!-- Section 1: Exploration -->
         <section class="section" id="explore-section">
             <h2>1. Explore Linear Equations</h2>
-            <div style="text-align:center;">
+            <div style="text-align:center; margin-bottom: 10px;">
                 <label for="explore-slope">Slope (m):</label>
                 <input type="range" id="explore-slope" min="-5" max="5" step="0.1" value="1" />
                 <span id="explore-slope-value">1.0</span>
@@ -112,6 +112,7 @@
                 <label for="explore-intercept">Intercept (c):</label>
                 <input type="range" id="explore-intercept" min="-10" max="10" step="0.5" value="0" />
                 <span id="explore-intercept-value">0.0</span>
+                <button id="explore-reset" type="button">Reset</button>
             </div>
             <div id="explore-plot"></div>
             <p style="text-align:center; font-style: italic; margin-top:10px;">
@@ -122,7 +123,8 @@
         <!-- Section 2: Guess the Equation Game -->
         <section class="section" id="guess-section">
             <h2>2. Guess the Equation Game</h2>
-            <button id="guess-new">New Mystery Line</button>
+            <button id="guess-new" type="button">New Mystery Line</button>
+            <button id="guess-reset" type="button">Reset</button>
             <div id="guess-plot"></div>
             <form id="guess-form" autocomplete="off">
                 <label for="guess-slope">Slope (m):</label>
@@ -137,7 +139,8 @@
         <!-- Section 3: Intersection Challenge -->
         <section class="section" id="intersection-section">
             <h2>3. Intersection Challenge</h2>
-            <button id="intersection-new">New Lines</button>
+            <button id="intersection-new" type="button">New Lines</button>
+            <button id="intersection-reset" type="button">Reset</button>
             <div id="intersection-plot"></div>
             <form id="intersection-form" autocomplete="off">
                 <label for="intersection-x">Guess x-value of intersection:</label>
@@ -193,6 +196,7 @@ const exploreSlope = document.getElementById('explore-slope');
 const exploreIntercept = document.getElementById('explore-intercept');
 const exploreSlopeVal = document.getElementById('explore-slope-value');
 const exploreInterceptVal = document.getElementById('explore-intercept-value');
+const exploreResetBtn = document.getElementById('explore-reset');
 
 function updateExplorePlot(){
     const m = parseFloat(exploreSlope.value);
@@ -204,6 +208,11 @@ function updateExplorePlot(){
 
 exploreSlope.addEventListener('input', updateExplorePlot);
 exploreIntercept.addEventListener('input', updateExplorePlot);
+exploreResetBtn.addEventListener('click', function(){
+    exploreSlope.value = 1;
+    exploreIntercept.value = 0;
+    updateExplorePlot();
+});
 updateExplorePlot();
 
 // --------------- Guess the Equation Section ---------------
@@ -219,6 +228,12 @@ function newMysteryLine(){
 }
 
 document.getElementById('guess-new').addEventListener('click', newMysteryLine);
+
+const guessResetBtn = document.getElementById('guess-reset');
+guessResetBtn.addEventListener('click', function(){
+    document.getElementById('guess-form').reset();
+    document.getElementById('guess-feedback').textContent = "";
+});
 
 document.getElementById('guess-form').addEventListener('submit', function(e){
     e.preventDefault();
@@ -284,6 +299,12 @@ function newIntersectionLines(){
 
 document.getElementById('intersection-new').addEventListener('click', newIntersectionLines);
 
+const intersectionResetBtn = document.getElementById('intersection-reset');
+intersectionResetBtn.addEventListener('click', function(){
+    document.getElementById('intersection-form').reset();
+    document.getElementById('intersection-feedback').textContent = "";
+});
+
 document.getElementById('intersection-form').addEventListener('submit', function(e){
     e.preventDefault();
     const guessX = parseFloat(document.getElementById('intersection-x').value);
@@ -305,3 +326,4 @@ newIntersectionLines();
 
 </body>
 </html>
+

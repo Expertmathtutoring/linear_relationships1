@@ -1,129 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Linear Relationships Learning Game</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #game-container { max-width: 800px; margin: auto; }
+        .section { margin-bottom: 50px; }
+        h2 { color: #2d7dc9; }
+        .slider-label { margin-right: 8px; }
+        input[type='range']{ width:180px; }
+    </style>
+</head>
+<body>
+<div id="game-container">
 
-# LINEAR RELATIONSHIPS LEARNING GAME
+    <h1>Linear Relationships Learning Game</h1>
 
-# Import required libraries
-import matplotlib.pyplot as plt
-import numpy as np
-from ipywidgets import interact, widgets
-from IPython.display import display, clear_output
+    <div class="section" id="explore-section">
+        <h2>1. Explore Linear Equations</h2>
+        <label class="slider-label">Slope (m):</label>
+        <input type="range" min="-5" max="5" step="0.5" value="1" id="explore-slope">
+        <span id="explore-slope-value">1</span>
+        <br/>
+        <label class="slider-label">Intercept (c):</label>
+        <input type="range" min="-10" max="10" step="1" value="0" id="explore-intercept">
+        <span id="explore-intercept-value">0</span>
+        <div id="explore-plot" style="width: 100%; height: 400px;"></div>
+        <p>Change the sliders above and watch how the graph changes!</p>
+    </div>
 
-# Optional for Jupyter: %matplotlib inline
+    <div class="section" id="guess-section">
+        <h2>2. Guess the Equation Game</h2>
+        <button id="guess-new">New Mystery Line</button>
+        <div id="guess-plot" style="width: 100%; height: 400px;"></div>
+        <form id="guess-form">
+            <label>Slope (m): <input type="number" id="guess-slope" required></label>
+            <label>Intercept (c): <input type="number" id="guess-intercept" required></label>
+            <button type="submit">Submit Guess</button>
+        </form>
+        <div id="guess-feedback"></div>
+    </div>
 
-# 1. Game Introduction
-print("="*40)
-print("Welcome to the Linear Relationships Learning Game!")
-print("""
-You can:
-- Investigate how slope and intercept affect linear graphs
-- Guess the equation from a line
-- Challenge yourself with random lines
-Let's get started!
-""")
-print("="*40)
+    <div class="section" id="intersection-section">
+        <h2>3. Intersection Challenge</h2>
+        <button id="intersection-new">New Lines</button>
+        <div id="intersection-plot" style="width: 100%; height: 400px;"></div>
+        <form id="intersection-form">
+            <label>x-value of intersection: <input type="number" step="0.01" id="intersection-x" required></label>
+            <button type="submit">Submit Guess</button>
+        </form>
+        <div id="intersection-feedback"></div>
+    </div>
 
+</div>
+<script>
+function plotLinear(target, slope, intercept, lineColor='blue') {
+    let x = [];
+    let y = [];
+    for(let i=-10; i<=10; i+=0.1){
+        x.push(i);
+        y.push(slope*i+intercept);
+    }
+    let trace = {
+        x: x,
+        y: y,
+        mode: 'lines',
+        line: {color: lineColor},
+        name: `y = ${slope}x + ${intercept}`,
+    };
+    let scatter = {
+        x: [0],
+        y: [intercept],
+        mode: 'markers',
+        marker: {color:'red', size:10},
+        name: 'Intercept'
+    };
+    Plotly.newPlot(target, [trace, scatter], {
+        margin: {t: 40},
+        xaxis: {title:"x", range:[-10,10]},
+        yaxis: {title:"y", range:[-20,20]},
+        showlegend:true,
+        title: 'Linear Relationship'
+    });
+}
 
-# 2. Explore Linear Equations (Interactive sliders)
-def plot_linear(slope=1, intercept=0):
-    x = np.linspace(-10, 10, 100)
-    y = slope * x + intercept
-    plt.figure(figsize=(8,4))
-    plt.plot(x, y, label=f"y = {slope}x + {intercept}", color='blue')
-    plt.scatter(0, intercept, color='red', label=f"Intercept (c = {intercept})")
-    plt.title("Explore Linear Relationships!")
-    plt.xlabel("x")
-    plt.ylabel("y")
-    plt.grid(True)
-    plt.legend()
-    plt.show()
+// Explore Section
+function updateExplorePlot() {
+    let m = parseFloat(document.getElementById('explore-slope').value);
+    let c = parseFloat(document.getElementById('explore-intercept').value);
+    document.getElementById('explore-slope-value').textContent = m;
+    document.getElementById('explore-intercept-value').textContent = c;
+    plotLinear('explore-plot', m, c);
+}
+document.getElementById('explore-slope').addEventListener('input', updateExplorePlot);
+document.getElementById('explore-intercept').addEventListener('input', updateExplorePlot);
+updateExplorePlot();
 
-print("Use the sliders below to explore different slopes and intercepts.")
-interact(plot_linear, slope=(-5, 5, 0.5), intercept=(-10, 10, 1))
+// Guess the Equation Game
+let mysterySlope = 1, mysteryIntercept = 0;
+function newMysteryLine() {
+    mysterySlope = Math.floor(Math.random()*11)-5; // -5 to 5
+    mysteryIntercept = Math.floor(Math.random()*21)-10; // -10 to 10
+    plotLinear('guess-plot', mysterySlope, mysteryIntercept, 'purple');
+    document.getElementById('guess-feedback').textContent = '';
+    document.getElementById('guess-form').reset();
+}
+document.getElementById('guess-new').addEventListener('click', newMysteryLine);
+newMysteryLine();
 
+document.getElementById('guess-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    let slopeGuess = parseInt(document.getElementById('guess-slope').value);
+    let interceptGuess = parseInt(document.getElementById('guess-intercept').value);
+    let feedback = document.getElementById('guess-feedback');
+    if(slopeGuess === mysterySlope && interceptGuess === mysteryIntercept){
+        feedback.innerHTML = `<span style='color:green'>🎉 Correct! The equation is y = ${mysterySlope}x + ${mysteryIntercept}.</span>`;
+    } else {
+        feedback.innerHTML = `<span style='color:red'>❌ Not quite! The actual equation was y = ${mysterySlope}x + ${mysteryIntercept}. Try again!</span>`;
+    }
+});
 
-# 3. Guess the Equation Game
-def guess_the_equation():
-    # Random slope and intercept
-    slope = np.random.randint(-5,6)
-    intercept = np.random.randint(-10,11)
-    x = np.linspace(-10, 10, 100)
-    y = slope*x + intercept
-    plt.figure(figsize=(8,4))
-    plt.plot(x, y, label='Mystery Line', color='purple')
-    plt.scatter(0, intercept, color='orange', label="Intercept")
-    plt.title("Guess the Equation of the Line!")
-    plt.xlabel("x")
-    plt.ylabel("y")
-    plt.grid(True)
-    plt.legend()
-    plt.show()
-    
-    # Interactive input
-    slope_guess = widgets.IntText(description="slope (m):")
-    intercept_guess = widgets.IntText(description="intercept (c):")
-    submit_button = widgets.Button(description="Submit")
-    output = widgets.Output()
-    
-    def on_submit(b):
-        clear_output(wait=True)
-        display(slope_guess, intercept_guess, submit_button, output)
-        with output:
-            if slope_guess.value == slope and intercept_guess.value == intercept:
-                print("🎉 Correct! The equation is y = {}x + {}.".format(slope, intercept))
-            else:
-                print(f"❌ Incorrect. The actual equation was y = {slope}x + {intercept}. Try again!")
-    
-    submit_button.on_click(on_submit)
-    display(slope_guess, intercept_guess, submit_button, output)
+// Intersection Challenge Game
+let slope1, slope2, intercept1, intercept2, intersectionX, intersectionY;
+function newIntersectionLines() {
+    slope1 = Math.floor(Math.random()*7)-3; // -3 to 3
+    intercept1 = Math.floor(Math.random()*13)-6; // -6 to 6
+    do {
+        slope2 = Math.floor(Math.random()*7)-3; // avoid parallel lines
+    } while(slope1 === slope2);
+    intercept2 = Math.floor(Math.random()*13)-6;
+    intersectionX = (intercept2-intercept1)/(slope1-slope2);
+    intersectionY = slope1*intersectionX+intercept1;
 
-print("\n--- Guess the Equation ---")
-print("A mystery line will appear. Can you guess the slope and intercept?")
-guess_the_equation()
+    let x = [], y1 = [], y2 = [];
+    for(let i=-10; i<=10; i+=0.1){
+        x.push(i);
+        y1.push(slope1*i+intercept1);
+        y2.push(slope2*i+intercept2);
+    }
+    let trace1 = {x:x, y:y1, mode:'lines', line:{color:'blue'}, name:`y = ${slope1}x + ${intercept1}`};
+    let trace2 = {x:x, y:y2, mode:'lines', line:{color:'red'}, name:`y = ${slope2}x + ${intercept2}`};
+    let intersection = {x:[intersectionX], y:[intersectionY], mode:'markers', marker:{color:'orange', size:12}, name:'Intersection'};
+    Plotly.newPlot('intersection-plot', [trace1, trace2, intersection], {
+        margin:{t:40},
+        xaxis:{title:"x", range:[-10,10]},
+        yaxis:{title:"y", range:[-20,20]},
+        showlegend:true,
+        title:'Two Lines - Where Do They Intersect?'
+    });
+    document.getElementById('intersection-feedback').textContent = '';
+    document.getElementById('intersection-form').reset();
+}
+document.getElementById('intersection-new').addEventListener('click', newIntersectionLines);
+newIntersectionLines();
 
-
-# 4. Intersection Challenge Game
-def intersection_challenge():
-    # Two random lines
-    slope1 = np.random.randint(-3,4)
-    intercept1 = np.random.randint(-6,7)
-    slope2 = np.random.randint(-3,4)
-    intercept2 = np.random.randint(-6,7)
-    
-    while slope1 == slope2:
-        # Avoid parallel lines
-        slope2 = np.random.randint(-3,4)
-    
-    x = np.linspace(-10,10,100)
-    y1 = slope1*x + intercept1
-    y2 = slope2*x + intercept2
-    plt.figure(figsize=(8,4))
-    plt.plot(x, y1, color='blue', label=f"Line 1: y = {slope1}x + {intercept1}")
-    plt.plot(x, y2, color='red', label=f"Line 2: y = {slope2}x + {intercept2}")
-    plt.title("Challenge: Where Do the Lines Intersect?")
-    plt.xlabel("x")
-    plt.ylabel("y")
-    plt.grid(True)
-    plt.legend()
-    plt.show()
-    
-    x_int = (intercept2 - intercept1)/(slope1 - slope2)
-    y_int = slope1*x_int + intercept1
-    
-    x_guess = widgets.FloatText(description="x value:")
-    submit_button = widgets.Button(description="Submit")
-    output = widgets.Output()
-    
-    def on_submit(b):
-        clear_output(wait=True)
-        display(x_guess, submit_button, output)
-        with output:
-            if np.isclose(x_guess.value, x_int, atol=0.5):
-                print("🎉 Correct! Intersection is at x = {:.2f}, y = {:.2f}".format(x_int, y_int))
-            else:
-                print("❌ Not quite. The intersection is at x = {:.2f}, y = {:.2f}. Try again!".format(x_int, y_int))
-    
-    submit_button.on_click(on_submit)
-    display(x_guess, submit_button, output)
-    
-print("\n--- Intersection Challenge ---")
-print("Two lines are shown. Can you find the x-value where they intersect?")
-intersection_challenge()
+document.getElementById('intersection-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    let xGuess = parseFloat(document.getElementById('intersection-x').value);
+    let feedback = document.getElementById('intersection-feedback');
+    if(Math.abs(xGuess-intersectionX) <= 0.5){
+        feedback.innerHTML = `<span style='color:green'>🎉 Correct! Intersection is at x = ${intersectionX.toFixed(2)}, y = ${intersectionY.toFixed(2)}</span>`;
+    } else {
+        feedback.innerHTML = `<span style='color:red'>❌ Not quite. The intersection is at x = ${intersectionX.toFixed(2)}, y = ${intersectionY.toFixed(2)}. Try again!</span>`;
+    }
+});
+</script>
+</body>
+</html>

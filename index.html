@@ -5,93 +5,24 @@
     <title>Linear Relationships - Fun & Visual Activity</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f0f8ff;
-            margin: 20px auto;
-            max-width: 900px;
-            color: #20232a;
-            line-height: 1.4;
-        }
-        h1, h2 {
-            text-align: center;
-            color: #1f618d;
-        }
-        .section {
-            background: white;
-            padding: 20px 25px;
-            margin-bottom: 45px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(31,97,141,0.3);
-        }
-        label {
-            font-weight: 600;
-            margin-right: 8px;
-        }
-        input[type=range] {
-            width: 180px;
-            vertical-align: middle;
-            margin-right: 10px;
-        }
-        input[type=number] {
-            width: 80px;
-            padding: 4px 6px;
-            margin: 0 10px 0 5px;
-            border-radius: 3px;
-            border: 1px solid #ccc;
-        }
-        button {
-            background-color: #1f618d;
-            color: white;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-            margin-left: 10px;
-        }
-        button:hover {
-            background-color: #145a86;
-        }
-        form {
-            margin-top: 15px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-        #feedback, #guess-feedback, #intersection-feedback {
-            margin-top: 10px;
-            font-weight: 700;
-            text-align: center;
-        }
-        .correct {
-            color: green;
-        }
-        .incorrect {
-            color: red;
-        }
-        #plots {
-            display: flex;
-            flex-direction: column;
-            gap: 40px;
-        }
-        #explore-plot, #guess-plot, #intersection-plot {
-            width: 100%;
-            height: 400px;
-        }
+        body {font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f8ff; margin: 20px auto; max-width: 900px; color: #20232a;}
+        h1, h2 {text-align: center; color: #1f618d;}
+        .section {background: white; padding: 20px 25px; margin-bottom: 45px; border-radius: 8px; box-shadow: 0 0 10px rgba(31,97,141,0.3);}
+        label {font-weight: 600; margin-right: 8px;}
+        input[type=range] {width: 180px; vertical-align: middle; margin-right: 10px;}
+        input[type=number], input[type=text] {width: 80px; padding: 4px 6px; margin: 0 10px 0 5px; border-radius: 3px; border: 1px solid #ccc;}
+        button {background-color: #1f618d; color: white; border: none; padding: 10px 18px; border-radius: 5px; cursor: pointer; font-size: 1rem; margin-left: 10px;}
+        button:hover {background-color: #145a86;}
+        form {margin-top: 15px; display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 15px;}
+        #feedback, #guess-feedback, #intersection-feedback {margin-top: 10px; font-weight: 700; text-align: center;}
+        .correct {color: green;}
+        .incorrect {color: red;}
+        #plots {display: flex; flex-direction: column; gap: 40px;}
+        #explore-plot, #guess-plot, #intersection-plot {width: 100%; height: 400px;}
         @media screen and (max-width: 600px) {
-            input[type=range] {
-                width: 100%;
-                margin-bottom: 8px;
-            }
-            form {
-                flex-direction: column;
-            }
-            button {
-                margin-left: 0;
-            }
+            input[type=range] {width: 100%; margin-bottom: 8px;}
+            form {flex-direction: column;}
+            button {margin-left: 0;}
         }
     </style>
 </head>
@@ -107,16 +38,19 @@
             <div style="text-align:center; margin-bottom: 10px;">
                 <label for="explore-slope">Slope (m):</label>
                 <input type="range" id="explore-slope" min="-5" max="5" step="0.1" value="1" />
-                <span id="explore-slope-value">1.0</span>
-                   
+                <span id="explore-slope-value">1</span>
+                 
+                <input type="text" id="explore-slope-input" placeholder="Or type e.g. 2/3, 1.5" />
+                <button id="explore-reset" type="button">Reset</button>
+                <br/>
                 <label for="explore-intercept">Intercept (c):</label>
                 <input type="range" id="explore-intercept" min="-10" max="10" step="0.5" value="0" />
-                <span id="explore-intercept-value">0.0</span>
-                <button id="explore-reset" type="button">Reset</button>
+                <span id="explore-intercept-value">0</span>
             </div>
             <div id="explore-plot"></div>
             <p style="text-align:center; font-style: italic; margin-top:10px;">
-                Use the sliders to change slope and intercept. Observe how the line moves and tilts!
+                Use the slider or type your own slope as a whole number, fraction or decimal.<br>
+                Examples: <b>2</b>, <b>-3</b>, <b>3/4</b>, <b>-2/5</b>, <b>1.25</b>
             </p>
         </section>
 
@@ -128,9 +62,9 @@
             <div id="guess-plot"></div>
             <form id="guess-form" autocomplete="off">
                 <label for="guess-slope">Slope (m):</label>
-                <input type="number" step="0.1" id="guess-slope" required />
+                <input type="number" step="any" id="guess-slope" required />
                 <label for="guess-intercept">Intercept (c):</label>
-                <input type="number" step="0.1" id="guess-intercept" required />
+                <input type="number" step="any" id="guess-intercept" required />
                 <button type="submit">Submit Guess</button>
             </form>
             <div id="guess-feedback"></div>
@@ -144,7 +78,7 @@
             <div id="intersection-plot"></div>
             <form id="intersection-form" autocomplete="off">
                 <label for="intersection-x">Guess x-value of intersection:</label>
-                <input type="number" step="0.01" id="intersection-x" required />
+                <input type="number" step="any" id="intersection-x" required />
                 <button type="submit">Submit Guess</button>
             </form>
             <div id="intersection-feedback"></div>
@@ -153,6 +87,25 @@
     </div>
 
 <script>
+// --- Fraction Parsing Utility ---
+function parseFraction(str) {
+    str = str.trim();
+    if (str.includes('/')) {
+        let parts = str.split('/');
+        if (parts.length === 2) {
+            let num = parseFloat(parts[0]);
+            let den = parseFloat(parts[1]);
+            if (!isNaN(num) && !isNaN(den) && den !== 0) {
+                return num / den;
+            }
+        }
+        return NaN; // Invalid fraction
+    } else {
+        let val = parseFloat(str);
+        return isNaN(val) ? NaN : val;
+    }
+}
+
 // Utility: Generate line points
 function generateLinePoints(slope, intercept, xmin=-10, xmax=10, step=0.1){
     let xs = [];
@@ -196,52 +149,84 @@ const exploreSlope = document.getElementById('explore-slope');
 const exploreIntercept = document.getElementById('explore-intercept');
 const exploreSlopeVal = document.getElementById('explore-slope-value');
 const exploreInterceptVal = document.getElementById('explore-intercept-value');
+const exploreSlopeInput = document.getElementById('explore-slope-input');
 const exploreResetBtn = document.getElementById('explore-reset');
 
-function updateExplorePlot(){
-    const m = parseFloat(exploreSlope.value);
+let exploreSlopeValue = parseFloat(exploreSlope.value);
+
+function updateExplorePlotCustom(slopeVal){
     const c = parseFloat(exploreIntercept.value);
-    exploreSlopeVal.textContent = m.toFixed(2);
-    exploreInterceptVal.textContent = c.toFixed(2);
-    plotLine('explore-plot', m, c, "#1f618d", "Explore Linear Equation");
+    exploreSlopeVal.textContent = slopeVal;
+    exploreInterceptVal.textContent = c;
+    plotLine('explore-plot', slopeVal, c, "#1f618d", "Explore Linear Equation");
 }
 
-exploreSlope.addEventListener('input', updateExplorePlot);
-exploreIntercept.addEventListener('input', updateExplorePlot);
+exploreSlope.addEventListener('input', function(){
+    exploreSlopeValue = parseFloat(exploreSlope.value);
+    exploreSlopeVal.textContent = exploreSlopeValue;
+    exploreSlopeInput.value = ""; // Clear custom input
+    updateExplorePlotCustom(exploreSlopeValue);
+});
+exploreIntercept.addEventListener('input', function(){
+    updateExplorePlotCustom(exploreSlopeValue);
+});
+exploreSlopeInput.addEventListener('change', function(){
+    let val = parseFraction(exploreSlopeInput.value);
+    if (!isNaN(val)) {
+        exploreSlopeValue = val;
+        exploreSlopeVal.textContent = exploreSlopeInput.value;
+        plotLine('explore-plot', val, parseFloat(exploreIntercept.value), "#1f618d", "Explore Linear Equation");
+    } else {
+        exploreSlopeInput.value = "";
+        alert("Enter a valid whole number, fraction (e.g. 3/4), or decimal.");
+    }
+});
+
 exploreResetBtn.addEventListener('click', function(){
     exploreSlope.value = 1;
     exploreIntercept.value = 0;
-    updateExplorePlot();
+    exploreSlopeInput.value = "";
+    exploreSlopeValue = 1;
+    updateExplorePlotCustom(1);
 });
-updateExplorePlot();
+updateExplorePlotCustom(1);
 
 // --------------- Guess the Equation Section ---------------
 let mysterySlope = 0;
 let mysteryIntercept = 0;
 
 function newMysteryLine(){
-    mysterySlope = (Math.random()*10 -5).toFixed(2);
-    mysteryIntercept = (Math.random()*20 -10).toFixed(2);
+    // Random whole, decimal, or fraction slope value
+    let rand = Math.random();
+    if(rand < 0.33){
+        // Whole number
+        mysterySlope = Math.floor(Math.random()*11) - 5;
+    } else if(rand < 0.66){
+        // Simple fraction (denominator from 2 to 5)
+        let num = Math.floor(Math.random()*11) - 5;
+        let den = Math.floor(Math.random()*4)+2;
+        mysterySlope = num/den;
+    } else {
+        // Decimal
+        mysterySlope = Number((Math.random()*10 -5).toFixed(2));
+    }
+    mysteryIntercept = Number((Math.random()*20 -10).toFixed(2));
     plotLine('guess-plot', parseFloat(mysterySlope), parseFloat(mysteryIntercept), "purple", "Guess the Equation!");
     document.getElementById('guess-feedback').textContent = "";
     document.getElementById('guess-form').reset();
 }
-
 document.getElementById('guess-new').addEventListener('click', newMysteryLine);
-
 const guessResetBtn = document.getElementById('guess-reset');
 guessResetBtn.addEventListener('click', function(){
     document.getElementById('guess-form').reset();
     document.getElementById('guess-feedback').textContent = "";
 });
-
 document.getElementById('guess-form').addEventListener('submit', function(e){
     e.preventDefault();
     const guessM = parseFloat(document.getElementById('guess-slope').value);
     const guessC = parseFloat(document.getElementById('guess-intercept').value);
     const feedback = document.getElementById('guess-feedback');
     const tol = 0.3; // tolerance for guessing
-
     if(Math.abs(guessM - mysterySlope) <= tol && Math.abs(guessC - mysteryIntercept) <= tol){
         feedback.textContent = `🎉 Correct! The equation is y = ${mysterySlope}x + ${mysteryIntercept}.`;
         feedback.className = "correct";
@@ -250,39 +235,37 @@ document.getElementById('guess-form').addEventListener('submit', function(e){
         feedback.className = "incorrect";
     }
 });
-
-// Initialize first mystery line
 newMysteryLine();
 
 // --------------- Intersection Challenge Section ---------------
 let slope1, slope2, intercept1, intercept2, intersectionX, intersectionY;
 
 function newIntersectionLines(){
-    slope1 = (Math.random()*6 - 3).toFixed(2);
-    intercept1 = (Math.random()*12 - 6).toFixed(2);
-
-    do {
-        slope2 = (Math.random()*6 - 3).toFixed(2);
-    } while(slope2 === slope1);
-
-    intercept2 = (Math.random()*12 - 6).toFixed(2);
-
+    // Random slope: whole number or fraction or decimal
+    function randomSlope(){
+        let rand = Math.random();
+        if(rand < 0.33){
+            return Math.floor(Math.random()*7)-3;
+        } else if(rand < 0.66){
+            let num = Math.floor(Math.random()*7)-3;
+            let den = Math.floor(Math.random()*4)+2;
+            return num/den;
+        } else {
+            return Number((Math.random()*6 - 3).toFixed(2));
+        }
+    }
+    slope1 = randomSlope();
+    intercept1 = Number((Math.random()*12 - 6).toFixed(2));
+    do { slope2 = randomSlope(); } while(slope2 === slope1);
+    intercept2 = Number((Math.random()*12 - 6).toFixed(2));
     intersectionX = (intercept2 - intercept1) / (slope1 - slope2);
     intersectionY = slope1*intersectionX + parseFloat(intercept1);
-
-    // Convert strings to numbers
-    slope1 = parseFloat(slope1);
-    intercept1 = parseFloat(intercept1);
-    slope2 = parseFloat(slope2);
-    intercept2 = parseFloat(intercept2);
-
     let x = [], y1 = [], y2 = [];
     for(let i=-10; i<=10; i+=0.1){
         x.push(i);
         y1.push(slope1*i + intercept1);
         y2.push(slope2*i + intercept2);
     }
-
     const trace1 = {x: x, y: y1, mode: 'lines', name: `Line 1: y = ${slope1.toFixed(2)}x + ${intercept1.toFixed(2)}`, line: {color: 'blue', width: 3}};
     const trace2 = {x: x, y: y2, mode: 'lines', name: `Line 2: y = ${slope2.toFixed(2)}x + ${intercept2.toFixed(2)}`, line: {color: 'red', width: 3}};
     const traceIntersection = {x: [intersectionX], y: [intersectionY], mode: 'markers', name: 'Intersection', marker: {color: 'orange', size: 12}};
@@ -292,25 +275,20 @@ function newIntersectionLines(){
         yaxis: {title: 'y', range: [-20,20]},
         margin: {t: 50}
     }, {responsive: true});
-
     document.getElementById('intersection-feedback').textContent = "";
     document.getElementById('intersection-form').reset();
 }
-
 document.getElementById('intersection-new').addEventListener('click', newIntersectionLines);
-
 const intersectionResetBtn = document.getElementById('intersection-reset');
 intersectionResetBtn.addEventListener('click', function(){
     document.getElementById('intersection-form').reset();
     document.getElementById('intersection-feedback').textContent = "";
 });
-
 document.getElementById('intersection-form').addEventListener('submit', function(e){
     e.preventDefault();
     const guessX = parseFloat(document.getElementById('intersection-x').value);
     const feedback = document.getElementById('intersection-feedback');
     const tolerance = 0.5;
-
     if(Math.abs(guessX - intersectionX) <= tolerance){
         feedback.textContent = `🎉 Correct! Intersection is at x = ${intersectionX.toFixed(2)}, y = ${intersectionY.toFixed(2)}.`;
         feedback.className = "correct";
@@ -319,8 +297,6 @@ document.getElementById('intersection-form').addEventListener('submit', function
         feedback.className = "incorrect";
     }
 });
-
-// Initialize first intersection challenge
 newIntersectionLines();
 </script>
 
